@@ -1,0 +1,18 @@
+services:
+  - type: web
+    name: slquery-streetlight-monitoring
+    runtime: node
+    plan: free
+    buildCommand: npm run render:build
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: GROQ_API_KEY
+        value: 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
+      - key: GROQ_MODEL
+        value: qwen/qwen3.6-27b
+      - key: DATABASE_URL
+        value: file:./prisma/dev.db
+      - key: FRONTEND_URL
+        value: "*"

@@ -1,0 +1,47 @@
+// Prisma Schema for Smart Streetlight Monitoring System
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Streetlight {
+  id          String      @id @default(uuid())
+  code        String      @unique // e.g. "SL-ZONE-001"
+  area        String      // e.g. "Sector 4 North"
+  latitude    Float
+  longitude   Float
+  status      String      @default("WORKING") // WORKING (Green), UNDER_REVIEW (Yellow), FAULTY (Red)
+  lastChecked DateTime    @default(now())
+  complaints  Complaint[]
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+}
+
+model Complaint {
+  id                 String       @id @default(uuid())
+  description        String
+  location           String
+  imageUrl           String?
+  userName           String?
+  userContact        String?
+  status             String       @default("PENDING") // PENDING, AI_VERIFIED, NEEDS_MORE_INFORMATION, REJECTED, READY_TO_SEND
+
+  // AI Verification Fields
+  aiValid            Boolean?
+  aiReadyToSend      Boolean?
+  aiReason           String?
+  aiConfidence       Float?
+  aiMissingInfo      String?      // JSON stringified array e.g. ["location"]
+
+  // Relation to Streetlight (optional if user specifies a streetlight code or proximity)
+  streetlightId      String?
+  streetlight        Streetlight? @relation(fields: [streetlightId], references: [id])
+
+  createdAt          DateTime     @default(now())
+  updatedAt          DateTime     @updatedAt
+}

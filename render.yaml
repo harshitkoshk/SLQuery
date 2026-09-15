@@ -4,7 +4,7 @@ services:
     runtime: node
     plan: free
     buildCommand: npm run render:build
-    startCommand: npm start
+    startCommand: npx prisma migrate deploy && npm start
     envVars:
       - key: NODE_ENV
         value: production
@@ -13,6 +13,12 @@ services:
       - key: GROQ_MODEL
         value: qwen/qwen3.6-27b
       - key: DATABASE_URL
-        value: file:./prisma/dev.db
+        fromDatabase:
+          name: slquery-db
+          property: connectionString
       - key: FRONTEND_URL
         value: "*"
+
+databases:
+  - name: slquery-db
+    plan: free
